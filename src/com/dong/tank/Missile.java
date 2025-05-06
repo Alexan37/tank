@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 package com.dong.tank;
 
 import java.awt.*;
@@ -74,12 +67,8 @@ public class Missile {
 
     public boolean collidesWithTank(Tank t) {
         if (this.live && this.getRect().intersects(t.getRect()) && t.isLive() && this.good != t.isGood()) {
-            if (t.isGood()) {
-                t.setLife(t.getLife() - 20);
-                if (t.getLife() <= 0) {
-                    t.setLive(false);
-                }
-            } else {
+            t.setLife(t.getLife() - 20);
+            if (t.getLife() <= 0) {
                 t.setLive(false);
             }
             this.live = false;
@@ -106,4 +95,3 @@ public class Missile {
         return false;
     }
 }
-

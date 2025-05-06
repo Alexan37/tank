@@ -1,4 +1,4 @@
-
+// ✅ Wall.java — обновлённый
 package com.dong.tank;
 
 import java.awt.*;
@@ -17,7 +17,7 @@ public class Wall {
 
     public void draw(Graphics g) {
         Color c = g.getColor();
-        g.setColor(Color.GRAY);
+        g.setColor(Color.DARK_GRAY); // Сделаем стены более выразительными
         g.fillRect(x, y, w, h);
         g.setColor(c);
     }
@@ -26,5 +26,3 @@ public class Wall {
         return new Rectangle(x, y, w, h);
     }
 }
-
-

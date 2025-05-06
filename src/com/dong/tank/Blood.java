@@ -1,14 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
 package com.dong.tank;
 
 import java.awt.*;

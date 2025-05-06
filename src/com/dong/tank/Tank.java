@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.dong.tank;
 
 import java.awt.Color;
@@ -20,7 +6,6 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
-
 
 public class Tank {
     public static final int XSPEED = 5;
@@ -89,15 +74,13 @@ public class Tank {
         }
 
         Color c = g.getColor();
-        g.setColor(good ? Color.RED : Color.BLUE);
+        g.setColor(good ? Color.BLUE : Color.RED);
         g.fillOval(x, y, WIDTH, HEIGHT);
         g.setColor(c);
 
-        if (good) bb.draw(g);
-
+        bb.draw(g);
         move();
 
-        // Draw gun barrel
         int cx = x + WIDTH / 2;
         int cy = y + HEIGHT / 2;
         switch (ptDir) {
@@ -133,7 +116,6 @@ public class Tank {
             ptDir = dir;
         }
 
-        // Boundary checks
         if (x < 0) x = 0;
         if (y < 25) y = 25;
         if (x + WIDTH > TankClient.GAME_WIDTH) x = TankClient.GAME_WIDTH - WIDTH;
@@ -145,7 +127,7 @@ public class Tank {
                 dir = Direction.values()[r.nextInt(8)];
             }
             step--;
-            if (r.nextInt(40) > 38) fire();
+            if (r.nextInt(10) > 2) fire(); // враги стреляют чаще
         }
     }
 
@@ -156,11 +138,11 @@ public class Tank {
 
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT -> bL = true;
-            case KeyEvent.VK_UP -> bU = true;
-            case KeyEvent.VK_RIGHT -> bR = true;
-            case KeyEvent.VK_DOWN -> bD = true;
-            case KeyEvent.VK_F2 -> {
+            case KeyEvent.VK_A -> bL = true;
+            case KeyEvent.VK_W -> bU = true;
+            case KeyEvent.VK_D -> bR = true;
+            case KeyEvent.VK_S -> bD = true;
+            case KeyEvent.VK_R -> {
                 if (!live) {
                     live = true;
                     life = 100;
@@ -172,12 +154,12 @@ public class Tank {
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_CONTROL -> fire();
-            case KeyEvent.VK_LEFT -> bL = false;
-            case KeyEvent.VK_UP -> bU = false;
-            case KeyEvent.VK_RIGHT -> bR = false;
-            case KeyEvent.VK_DOWN -> bD = false;
-            case KeyEvent.VK_A -> superFire();
+            case KeyEvent.VK_ENTER -> fire(); // стрельба на Shift
+            case KeyEvent.VK_A -> bL = false;
+            case KeyEvent.VK_W -> bU = false;
+            case KeyEvent.VK_D -> bR = false;
+            case KeyEvent.VK_S -> bD = false;
+            case KeyEvent.VK_P -> superFire(); // супер-выстрел на P
         }
         locateDirection();
     }
@@ -241,17 +223,9 @@ public class Tank {
         return false;
     }
 
-    public boolean eat(Blood b) {
-        if (this.live && b.isLive() && this.getRect().intersects(b.getRect())) {
-            this.life = 100;
-            b.setLive(false);
-            return true;
-        }
-        return false;
-    }
-
     private class BloodBar {
         public void draw(Graphics g) {
+            if (!live) return;
             Color c = g.getColor();
             g.setColor(Color.RED);
             g.drawRect(x, y - 10, WIDTH, 10);
@@ -261,6 +235,3 @@ public class Tank {
         }
     }
 }
-
-
-

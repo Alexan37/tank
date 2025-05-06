@@ -1,3 +1,4 @@
+// ✅ TankClient.java — обновлённый
 package com.dong.tank;
 
 import java.awt.*;
@@ -10,7 +11,6 @@ public class TankClient extends Frame {
     public static final int GAME_HEIGHT = 600;
 
     Tank myTank = new Tank(300, 300, true, Tank.Direction.STOP, this);
-    Blood b = new Blood();
     Wall w1 = new Wall(100, 200, 20, 150, this),
             w2 = new Wall(300, 100, 300, 20, this);
 
@@ -50,10 +50,8 @@ public class TankClient extends Frame {
         }
 
         myTank.draw(g);
-        myTank.eat(b);
         w1.draw(g);
         w2.draw(g);
-        b.draw(g);
     }
 
     public void update(Graphics g) {
@@ -62,7 +60,7 @@ public class TankClient extends Frame {
         }
         Graphics gOff = offScreenImage.getGraphics();
         Color c = gOff.getColor();
-        gOff.setColor(Color.GREEN);
+        gOff.setColor(new Color(144, 238, 144)); // светло-зелёный фон
         gOff.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
         gOff.setColor(c);
         paint(gOff);
@@ -82,7 +80,7 @@ public class TankClient extends Frame {
             }
         });
         this.setResizable(false);
-        this.setBackground(Color.GREEN);
+        this.setBackground(new Color(144, 238, 144)); // светло-зелёный фон
         this.addKeyListener(new KeyMonitor());
         setVisible(true);
         new Thread(new PaintThread()).start();
@@ -114,4 +112,3 @@ public class TankClient extends Frame {
         }
     }
 }
-

@@ -1,14 +1,4 @@
-
-
-
-
-
-
-
-
-
-
-
+// ✅ Explode.java — обновлённый
 package com.dong.tank;
 
 import java.awt.*;
@@ -46,5 +36,3 @@ public class Explode {
         step++;
     }
 }
-
-
