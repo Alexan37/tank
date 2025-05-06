@@ -12,7 +12,6 @@ public class TankClient extends Frame {
         g.setColor(Color.RED);
         g.fillOval(x, y, 30, 30);
         g.setColor(c);
-        y += 5;
     }
     public void update(Graphics g) {
         if(offScreenImage == null) {
@@ -28,18 +27,19 @@ public class TankClient extends Frame {
         print(gOffScreen);
         g.drawImage(offScreenImage, 0, 0, null);
     }
-8
     public void launchFrame() {
         this.setLocation(300, 50);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.setTitle("TankWar");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                10
                 System.exit(0);
             }
         });
         this.setResizable(false);
         this.setBackground(Color.GREEN);
+        this.addKeyListener(new KeyMonitor());
         setVisible(true);
         new Thread(new PaintThread()).start();
     }
@@ -56,6 +56,26 @@ public class TankClient extends Frame {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+    private class KeyMonitor extends KeyAdapter {
+        public void keyPressed(KeyEvent e) {
+            int key = e.getKeyCode();
+            switch(key) {
+                case KeyEvent.VK_LEFT:
+                    x -= 5;
+                    break;
+                case KeyEvent.VK_UP:
+                    y -= 5;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    11
+                    x += 5;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    y += 5;
+                    break;
             }
         }
     }
