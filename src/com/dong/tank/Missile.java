@@ -1,71 +1,42 @@
-Missile.java:
-import java.awt.*;
 
-public class Missile {
-    public static final int XSPEED = 10;
-    public static final int YSPEED = 10;
-    public static final int WIDTH = 10;
-    public static final int HEIGHT = 10;
+public boolean hitTank(Tank t) {
+    if (this.getRect().intersects(t.getRect()) && t.isLive()) {
+        t.setLive(false);
+        this.live = false;
+        // создаём взрыв в центре танка
+        Explode e = new Explode(t.getX() + Tank.WIDTH / 2, t.getY() + Tank.HEIGHT / 2, tc);
+        tc.explodes.add(e);
+        return true;
+    }
+    return false;
+}
 
-    private int x, y;
-    private Tank.Direction dir;
-    private boolean live = true;
-    private TankClient tc;
+// === Исправленный метод paint() в TankClient.java ===
+public void paint(Graphics g) {
+    // вывод количества снарядов
+    g.drawString("missiles count: " + missiles.size(), 10, 50);
+    // вывод количества взрывов
+    g.drawString("explodes count: " + explodes.size(), 10, 70);
 
-    public boolean isLive() {
-        return live;
+    // отрисовка снарядов и проверка попадания
+    for (int i = 0; i < missiles.size(); i++) {
+        Missile m = missiles.get(i);
+        m.hitTank(enemyTank);
+        m.draw(g);
     }
 
-    public Missile(int x, int y, Tank.Direction dir) {
-        this.x = x;
-        this.y = y;
-        this.dir = dir;
-    }
-
-    public Missile(int x, int y, Tank.Direction dir, TankClient tc) {
-        this(x, y, dir);
-        this.tc = tc;
-    }
-
-    public void draw(Graphics g) {
-        if (!live) return;
-
-        Color c = g.getColor();
-        g.setColor(Color.BLACK);
-        g.fillOval(x, y, WIDTH, HEIGHT);
-        g.setColor(c);
-
-        move();
-    }
-
-    private void move() {
-        switch (dir) {
-            case L:  x -= XSPEED; break;
-            case LU: x -= XSPEED; y -= YSPEED; break;
-            case U:  y -= YSPEED; break;
-            case RU: x += XSPEED; y -= YSPEED; break;
-            case R:  x += XSPEED; break;
-            case RD: x += XSPEED; y += YSPEED; break;
-            case D:  y += YSPEED; break;
-            case LD: x -= XSPEED; y += YSPEED; break;
-            default: break;
-        }
-
-        if (x < 0 || y < 0 || x > TankClient.GAME_WIDTH || y > TankClient.GAME_HEIGHT) {
-            live = false;
+    // отрисовка взрывов
+    for (int i = 0; i < explodes.size(); i++) {
+        Explode e = explodes.get(i);
+        if (e.isLive()) {
+            e.draw(g);
+        } else {
+            explodes.remove(i);
+            i--;
         }
     }
 
-    public Rectangle getRect() {
-        return new Rectangle(x, y, WIDTH, HEIGHT);
-    }
-
-    public boolean hitTank(Tank t) {
-        if (this.live && t.isLive() && this.getRect().intersects(t.getRect())) {
-            t.setLive(false);
-            this.live = false;
-            return true;
-        }
-        return false;
-    }
+    // отрисовка танков
+    myTank.draw(g);
+    enemyTank.draw(g);
 }
