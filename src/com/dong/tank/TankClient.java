@@ -1,17 +1,30 @@
+TankClient.java:
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TankClient extends Frame {
     public static final int GAME_WIDTH = 800;
     public static final int GAME_HEIGHT = 600;
 
     Tank myTank = new Tank(50, 50, this);
-    Missile m = null;
+    List<Missile> missiles = new ArrayList<>();
+
     Image offScreenImage = null;
 
     public void paint(Graphics g) {
+        g.drawString("missiles count: " + missiles.size(), 10, 50);
+        for (int i = 0; i < missiles.size(); i++) {
+            Missile m = missiles.get(i);
+            if (m.isLive()) {
+                m.draw(g);
+            } else {
+                missiles.remove(i);
+                i--;
+            }
+        }
         myTank.draw(g);
-        if (m != null) m.draw(g);
     }
 
     public void update(Graphics g) {
@@ -31,24 +44,25 @@ public class TankClient extends Frame {
         this.setLocation(300, 50);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.setTitle("TankWar");
-
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
-
         this.setResizable(false);
         this.setBackground(Color.GREEN);
         this.addKeyListener(new KeyMonitor());
         setVisible(true);
-
         new Thread(new PaintThread()).start();
     }
 
     public static void main(String[] args) {
         TankClient tc = new TankClient();
         tc.launchFrame();
+    }
+
+    public void addMissile(Missile m) {
+        missiles.add(m);
     }
 
     private class PaintThread implements Runnable {
@@ -65,12 +79,12 @@ public class TankClient extends Frame {
     }
 
     private class KeyMonitor extends KeyAdapter {
-        public void keyReleased(KeyEvent e) {
-            myTank.keyReleased(e);
-        }
-
         public void keyPressed(KeyEvent e) {
             myTank.keyPressed(e);
+        }
+
+        public void keyReleased(KeyEvent e) {
+            myTank.keyReleased(e);
         }
     }
 }
