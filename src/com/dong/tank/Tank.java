@@ -1,27 +1,39 @@
 import java.awt.*;
+import java.awt.event.*;
 
-public class Missile {
-    public static final int XSPEED = 10;
-    public static final int YSPEED = 10;
+public class Tank {
+    public static final int XSPEED = 5;
+    public static final int YSPEED = 5;
+    public static final int WIDTH = 30;
+    public static final int HEIGHT = 30;
+
     private int x, y;
-    private Tank.Direction dir;
+    private boolean bL = false, bU = false, bR = false, bD = false;
+    private Direction dir = Direction.STOP;
 
-    public Missile(int x, int y, Tank.Direction dir) {
+    private TankClient tc;
+
+    enum Direction {L, LU, U, RU, R, RD, D, LD, STOP}
+
+    public Tank(int x, int y) {
         this.x = x;
         this.y = y;
-        this.dir = dir;
+    }
+
+    public Tank(int x, int y, TankClient tc) {
+        this(x, y);
+        this.tc = tc;
     }
 
     public void draw(Graphics g) {
         Color c = g.getColor();
-        g.setColor(Color.BLACK);
-        g.fillOval(x, y, 10, 10); // отрисовка снаряда
+        g.setColor(Color.RED);
+        g.fillOval(x, y, WIDTH, HEIGHT);
         g.setColor(c);
-
-        move(); // движение после отрисовки
+        move();
     }
 
-    private void move() {
+    void move() {
         switch (dir) {
             case L:
                 x -= XSPEED;
@@ -51,6 +63,67 @@ public class Missile {
                 x -= XSPEED;
                 y += YSPEED;
                 break;
+            case STOP:
+                break;
         }
+    }
+
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        switch (key) {
+            case KeyEvent.VK_CONTROL:
+                tc.m = fire();
+                break;
+            case KeyEvent.VK_LEFT:
+                bL = true;
+                break;
+            case KeyEvent.VK_UP:
+                bU = true;
+                break;
+            case KeyEvent.VK_RIGHT:
+                bR = true;
+                break;
+            case KeyEvent.VK_DOWN:
+                bD = true;
+                break;
+        }
+        locateDirection();
+    }
+
+    public void keyReleased(KeyEvent e) {
+        int key = e.getKeyCode();
+        switch (key) {
+            case KeyEvent.VK_LEFT:
+                bL = false;
+                break;
+            case KeyEvent.VK_UP:
+                bU = false;
+                break;
+            case KeyEvent.VK_RIGHT:
+                bR = false;
+                break;
+            case KeyEvent.VK_DOWN:
+                bD = false;
+                break;
+        }
+        locateDirection();
+    }
+
+    void locateDirection() {
+        if (bL && !bU && !bR && !bD) dir = Direction.L;
+        else if (bL && bU && !bR && !bD) dir = Direction.LU;
+        else if (!bL && bU && !bR && !bD) dir = Direction.U;
+        else if (!bL && bU && bR && !bD) dir = Direction.RU;
+        else if (!bL && !bU && bR && !bD) dir = Direction.R;
+        else if (!bL && !bU && bR && bD) dir = Direction.RD;
+        else if (!bL && !bU && !bR && bD) dir = Direction.D;
+        else if (bL && !bU && !bR && bD) dir = Direction.LD;
+        else dir = Direction.STOP;
+    }
+
+    public Missile fire() {
+        int x = this.x + Tank.WIDTH / 2 - Missile.WIDTH / 2;
+        int y = this.y + Tank.HEIGHT / 2 - Missile.HEIGHT / 2;
+        return new Missile(x, y, dir);
     }
 }
