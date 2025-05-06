@@ -1,3 +1,4 @@
+Missile.java:
 import java.awt.*;
 
 public class Missile {
@@ -7,13 +8,23 @@ public class Missile {
     public static final int HEIGHT = 10;
 
     private int x, y;
-    private boolean live = true;
     private Tank.Direction dir;
+    private boolean live = true;
+    private TankClient tc;
+
+    public boolean isLive() {
+        return live;
+    }
 
     public Missile(int x, int y, Tank.Direction dir) {
         this.x = x;
         this.y = y;
         this.dir = dir;
+    }
+
+    public Missile(int x, int y, Tank.Direction dir, TankClient tc) {
+        this(x, y, dir);
+        this.tc = tc;
     }
 
     public void draw(Graphics g) {
@@ -37,16 +48,13 @@ public class Missile {
             case RD: x += XSPEED; y += YSPEED; break;
             case D:  y += YSPEED; break;
             case LD: x -= XSPEED; y += YSPEED; break;
-            default: break;
+            case STOP: break;
         }
 
-        // Удалить снаряд, если он вышел за границы окна
+        // Удаление снаряда, если он вышел за пределы окна
         if (x < 0 || y < 0 || x > TankClient.GAME_WIDTH || y > TankClient.GAME_HEIGHT) {
             live = false;
+            tc.missiles.remove(this);
         }
-    }
-
-    public boolean isLive() {
-        return live;
     }
 }

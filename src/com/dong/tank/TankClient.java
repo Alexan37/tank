@@ -15,6 +15,7 @@ public class TankClient extends Frame {
 
     public void paint(Graphics g) {
         g.drawString("missiles count: " + missiles.size(), 10, 50);
+
         for (int i = 0; i < missiles.size(); i++) {
             Missile m = missiles.get(i);
             if (m.isLive()) {
@@ -24,6 +25,7 @@ public class TankClient extends Frame {
                 i--;
             }
         }
+
         myTank.draw(g);
     }
 
@@ -31,11 +33,13 @@ public class TankClient extends Frame {
         if (offScreenImage == null) {
             offScreenImage = this.createImage(GAME_WIDTH, GAME_HEIGHT);
         }
+
         Graphics gOffScreen = offScreenImage.getGraphics();
         Color c = gOffScreen.getColor();
         gOffScreen.setColor(Color.GREEN);
         gOffScreen.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
         gOffScreen.setColor(c);
+
         paint(gOffScreen);
         g.drawImage(offScreenImage, 0, 0, null);
     }
@@ -44,25 +48,24 @@ public class TankClient extends Frame {
         this.setLocation(300, 50);
         this.setSize(GAME_WIDTH, GAME_HEIGHT);
         this.setTitle("TankWar");
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
+
         this.setResizable(false);
         this.setBackground(Color.GREEN);
         this.addKeyListener(new KeyMonitor());
         setVisible(true);
+
         new Thread(new PaintThread()).start();
     }
 
     public static void main(String[] args) {
         TankClient tc = new TankClient();
         tc.launchFrame();
-    }
-
-    public void addMissile(Missile m) {
-        missiles.add(m);
     }
 
     private class PaintThread implements Runnable {
