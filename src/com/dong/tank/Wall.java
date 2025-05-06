@@ -1,9 +1,11 @@
-Wall.java:
+
+package com.dong.tank;
+
 import java.awt.*;
 
 public class Wall {
-    private int x, y, w, h;
-    private TankClient tc;
+    int x, y, w, h;
+    TankClient tc;
 
     public Wall(int x, int y, int w, int h, TankClient tc) {
         this.x = x;
@@ -24,3 +26,5 @@ public class Wall {
         return new Rectangle(x, y, w, h);
     }
 }
+
+
