@@ -3,17 +3,15 @@ import java.awt.event.*;
 public class TankClient extends Frame {
     public static final int GAME_WIDTH = 800;
     public static final int GAME_HEIGHT = 600;
-    int x = 50, y = 50;
+    Tank myTank = new Tank(50, 50);
     //这是一张虚拟图片
     Image offScreenImage = null;
     //paint这个方法不需要被调用，一旦要被重画的时会被自动 调用
     public void paint(Graphics g) {
-        Color c = g.getColor();
-        g.setColor(Color.RED);
-        g.fillOval(x, y, 30, 30);
-        g.setColor(c);
+        myTank.draw(g);
     }
     public void update(Graphics g) {
+        12
         if(offScreenImage == null) {
             offScreenImage = this.createImage(GAME_WIDTH,
                     GAME_HEIGHT);
@@ -33,7 +31,6 @@ public class TankClient extends Frame {
         this.setTitle("TankWar");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                10
                 System.exit(0);
             }
         });
@@ -51,6 +48,7 @@ public class TankClient extends Frame {
         public void run() {
             while(true) {
                 repaint();
+                13
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -61,22 +59,41 @@ public class TankClient extends Frame {
     }
     private class KeyMonitor extends KeyAdapter {
         public void keyPressed(KeyEvent e) {
-            int key = e.getKeyCode();
-            switch(key) {
-                case KeyEvent.VK_LEFT:
-                    x -= 5;
-                    break;
-                case KeyEvent.VK_UP:
-                    y -= 5;
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    11
-                    x += 5;
-                    break;
-                case KeyEvent.VK_DOWN:
-                    y += 5;
-                    break;
-            }
+            myTank.KyePressed(e);
+        }
+    }
+}
+e) Tank.java
+import java.awt.*;
+        import java.awt.event.*;
+public class Tank {
+    int x, y;
+    public Tank(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+    public void draw(Graphics g) {
+        Color c = g.getColor();
+        g.setColor(Color.RED);
+        g.fillOval(x, y, 30, 30);
+        g.setColor(c);
+    }
+    public void KyePressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        switch(key) {
+            case KeyEvent.VK_LEFT:
+                x -= 5;
+                break;
+            case KeyEvent.VK_UP:
+                y -= 5;
+                14
+                break;
+            case KeyEvent.VK_RIGHT:
+                x += 5;
+                break;
+            case KeyEvent.VK_DOWN:
+                y += 5;
+                break;
         }
     }
 }
