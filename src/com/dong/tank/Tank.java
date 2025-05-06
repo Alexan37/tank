@@ -10,6 +10,7 @@ public class Tank {
     private int x, y;
     private boolean bL = false, bU = false, bR = false, bD = false;
     private Direction dir = Direction.STOP;
+    private Direction ptDir = Direction.D;
 
     private TankClient tc;
 
@@ -30,6 +31,40 @@ public class Tank {
         g.setColor(Color.RED);
         g.fillOval(x, y, WIDTH, HEIGHT);
         g.setColor(c);
+
+        // Рисуем ствол танка в зависимости от направления
+        int centerX = x + WIDTH / 2;
+        int centerY = y + HEIGHT / 2;
+
+        switch (ptDir) {
+            case L:
+                g.drawLine(centerX, centerY, x, centerY);
+                break;
+            case LU:
+                g.drawLine(centerX, centerY, x, y);
+                break;
+            case U:
+                g.drawLine(centerX, centerY, centerX, y);
+                break;
+            case RU:
+                g.drawLine(centerX, centerY, x + WIDTH, y);
+                break;
+            case R:
+                g.drawLine(centerX, centerY, x + WIDTH, centerY);
+                break;
+            case RD:
+                g.drawLine(centerX, centerY, x + WIDTH, y + HEIGHT);
+                break;
+            case D:
+                g.drawLine(centerX, centerY, centerX, y + HEIGHT);
+                break;
+            case LD:
+                g.drawLine(centerX, centerY, x, y + HEIGHT);
+                break;
+            default:
+                break;
+        }
+
         move();
     }
 
@@ -65,6 +100,11 @@ public class Tank {
                 break;
             case STOP:
                 break;
+        }
+
+        // Ствол танка принимает текущее направление
+        if (this.dir != Direction.STOP) {
+            this.ptDir = this.dir;
         }
     }
 
@@ -122,8 +162,8 @@ public class Tank {
     }
 
     public Missile fire() {
-        int x = this.x + Tank.WIDTH / 2 - Missile.WIDTH / 2;
-        int y = this.y + Tank.HEIGHT / 2 - Missile.HEIGHT / 2;
-        return new Missile(x, y, dir);
+        int mx = this.x + WIDTH / 2 - Missile.WIDTH / 2;
+        int my = this.y + HEIGHT / 2 - Missile.HEIGHT / 2;
+        return new Missile(mx, my, ptDir);
     }
 }
