@@ -9,27 +9,29 @@ public class Tank {
     public static final int HEIGHT = 30;
 
     private int x, y;
+    private boolean good;
     private boolean bL = false, bU = false, bR = false, bD = false;
     private Direction dir = Direction.STOP;
-    private Direction ptDir = Direction.D; // направление ствола
+    private Direction ptDir = Direction.D;
 
     TankClient tc;
 
     enum Direction {L, LU, U, RU, R, RD, D, LD, STOP}
 
-    public Tank(int x, int y) {
+    public Tank(int x, int y, boolean good) {
         this.x = x;
         this.y = y;
+        this.good = good;
     }
 
-    public Tank(int x, int y, TankClient tc) {
-        this(x, y);
+    public Tank(int x, int y, boolean good, TankClient tc) {
+        this(x, y, good);
         this.tc = tc;
     }
 
     public void draw(Graphics g) {
         Color c = g.getColor();
-        g.setColor(Color.RED);
+        g.setColor(good ? Color.RED : Color.BLUE);
         g.fillOval(x, y, WIDTH, HEIGHT);
         g.setColor(c);
 
@@ -37,32 +39,15 @@ public class Tank {
         int cy = y + HEIGHT / 2;
 
         switch (ptDir) {
-            case L:
-                g.drawLine(cx, cy, x, cy);
-                break;
-            case LU:
-                g.drawLine(cx, cy, x, y);
-                break;
-            case U:
-                g.drawLine(cx, cy, cx, y);
-                break;
-            case RU:
-                g.drawLine(cx, cy, x + WIDTH, y);
-                break;
-            case R:
-                g.drawLine(cx, cy, x + WIDTH, cy);
-                break;
-            case RD:
-                g.drawLine(cx, cy, x + WIDTH, y + HEIGHT);
-                break;
-            case D:
-                g.drawLine(cx, cy, cx, y + HEIGHT);
-                break;
-            case LD:
-                g.drawLine(cx, cy, x, y + HEIGHT);
-                break;
-            case STOP:
-                break;
+            case L:  g.drawLine(cx, cy, x, cy); break;
+            case LU: g.drawLine(cx, cy, x, y); break;
+            case U:  g.drawLine(cx, cy, cx, y); break;
+            case RU: g.drawLine(cx, cy, x + WIDTH, y); break;
+            case R:  g.drawLine(cx, cy, x + WIDTH, cy); break;
+            case RD: g.drawLine(cx, cy, x + WIDTH, y + HEIGHT); break;
+            case D:  g.drawLine(cx, cy, cx, y + HEIGHT); break;
+            case LD: g.drawLine(cx, cy, x, y + HEIGHT); break;
+            default: break;
         }
 
         move();
@@ -85,7 +70,7 @@ public class Tank {
             ptDir = dir;
         }
 
-        // Границы поля
+        // Ограничение по границам окна
         if (x < 0) x = 0;
         if (y < 25) y = 25;
         if (x + WIDTH > TankClient.GAME_WIDTH) x = TankClient.GAME_WIDTH - WIDTH;
@@ -132,7 +117,7 @@ public class Tank {
     public Missile fire() {
         int mx = this.x + WIDTH / 2 - Missile.WIDTH / 2;
         int my = this.y + HEIGHT / 2 - Missile.HEIGHT / 2;
-        Missile m = new Missile(mx, my, ptDir, tc);
+        Missile m = new Missile(mx, my, ptDir, this.tc);
         tc.missiles.add(m);
         return m;
     }
