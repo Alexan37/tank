@@ -1,8 +1,7 @@
+// ✅ Tank.java — флаг России у игрока, флаг Украины у врагов, шкала жизни только у игрока
 package com.dong.tank;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +14,6 @@ public class Tank {
 
     private boolean live = true;
     private int life = 100;
-    private BloodBar bb = new BloodBar();
     private TankClient tc = null;
 
     private int x, y;
@@ -67,18 +65,31 @@ public class Tank {
 
     public void draw(Graphics g) {
         if (!live) {
-            if (!good) {
-                tc.tanks.remove(this);
-            }
+            if (!good) tc.tanks.remove(this);
             return;
         }
 
         Color c = g.getColor();
-        g.setColor(good ? Color.BLUE : Color.RED);
-        g.fillOval(x, y, WIDTH, HEIGHT);
+
+        if (good) {
+            // Флаг России: бело-сине-красный
+            g.setColor(Color.WHITE);
+            g.fillRect(x, y, WIDTH, HEIGHT / 3);
+            g.setColor(Color.BLUE);
+            g.fillRect(x, y + HEIGHT / 3, WIDTH, HEIGHT / 3);
+            g.setColor(Color.RED);
+            g.fillRect(x, y + 2 * HEIGHT / 3, WIDTH, HEIGHT / 3);
+        } else {
+            // Флаг Украины: жёлто-синий
+            g.setColor(Color.YELLOW);
+            g.fillRect(x, y, WIDTH, HEIGHT / 2);
+            g.setColor(Color.BLUE);
+            g.fillRect(x, y + HEIGHT / 2, WIDTH, HEIGHT / 2);
+        }
+
         g.setColor(c);
 
-        bb.draw(g);
+        if (good) drawBloodBar(g);
         move();
 
         int cx = x + WIDTH / 2;
@@ -92,8 +103,16 @@ public class Tank {
             case RD -> g.drawLine(cx, cy, x + WIDTH, y + HEIGHT);
             case D -> g.drawLine(cx, cy, cx, y + HEIGHT);
             case LD -> g.drawLine(cx, cy, x, y + HEIGHT);
-            default -> {}
         }
+    }
+
+    private void drawBloodBar(Graphics g) {
+        Color c = g.getColor();
+        g.setColor(Color.RED);
+        g.drawRect(x, y - 10, WIDTH, 10);
+        int w = WIDTH * life / 100;
+        g.fillRect(x, y - 10, w, 10);
+        g.setColor(c);
     }
 
     void move() {
@@ -109,12 +128,9 @@ public class Tank {
             case RD -> { x += XSPEED; y += YSPEED; }
             case D -> y += YSPEED;
             case LD -> { x -= XSPEED; y += YSPEED; }
-            case STOP -> {}
         }
 
-        if (dir != Direction.STOP) {
-            ptDir = dir;
-        }
+        if (dir != Direction.STOP) ptDir = dir;
 
         if (x < 0) x = 0;
         if (y < 25) y = 25;
@@ -127,7 +143,7 @@ public class Tank {
                 dir = Direction.values()[r.nextInt(8)];
             }
             step--;
-            if (r.nextInt(10) > 2) fire(); // враги стреляют чаще
+            if (r.nextInt(10) > 2) fire();
         }
     }
 
@@ -154,12 +170,12 @@ public class Tank {
 
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_ENTER -> fire(); // стрельба на Shift
-            case KeyEvent.VK_A -> bL = false;
-            case KeyEvent.VK_W -> bU = false;
-            case KeyEvent.VK_D -> bR = false;
-            case KeyEvent.VK_S -> bD = false;
-            case KeyEvent.VK_P -> superFire(); // супер-выстрел на P
+            case KeyEvent.VK_ENTER -> fire();
+            case KeyEvent.VK_LEFT, KeyEvent.VK_A -> bL = false;
+            case KeyEvent.VK_UP, KeyEvent.VK_W -> bU = false;
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> bR = false;
+            case KeyEvent.VK_DOWN, KeyEvent.VK_S -> bD = false;
+            case KeyEvent.VK_P -> superFire();
         }
         locateDirection();
     }
@@ -223,15 +239,12 @@ public class Tank {
         return false;
     }
 
-    private class BloodBar {
-        public void draw(Graphics g) {
-            if (!live) return;
-            Color c = g.getColor();
-            g.setColor(Color.RED);
-            g.drawRect(x, y - 10, WIDTH, 10);
-            int w = WIDTH * life / 100;
-            g.fillRect(x, y - 10, w, 10);
-            g.setColor(c);
+    public boolean eat(Blood b) {
+        if (this.live && b.isLive() && this.getRect().intersects(b.getRect())) {
+            this.life = 100;
+            b.setLive(false);
+            return true;
         }
+        return false;
     }
 }

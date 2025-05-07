@@ -1,4 +1,4 @@
-// ✅ Explode.java — обновлённый
+// ✅ Explode.java
 package com.dong.tank;
 
 import java.awt.*;
@@ -8,7 +8,7 @@ public class Explode {
     private boolean live = true;
     private TankClient tc;
 
-    int[] diameter = {4, 7, 12, 18, 26, 32, 49, 30, 14, 6};
+    int[] diameter = {4, 8, 16, 24, 32, 40, 48, 32, 16, 8};
     int step = 0;
 
     public Explode(int x, int y, TankClient tc) {

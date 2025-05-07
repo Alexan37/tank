@@ -1,3 +1,4 @@
+// ✅ Missile.java — оптимизированный
 package com.dong.tank;
 
 import java.awt.*;
@@ -12,35 +13,27 @@ public class Missile {
     private int x, y;
     private boolean good;
     private boolean live = true;
-    private TankClient tc;
-    private Tank.Direction dir;
+    private final TankClient tc;
+    private final Tank.Direction dir;
 
     public boolean isLive() {
         return live;
     }
 
-    public Missile(int x, int y, Tank.Direction dir) {
+    public Missile(int x, int y, boolean good, Tank.Direction dir, TankClient tc) {
         this.x = x;
         this.y = y;
         this.dir = dir;
-    }
-
-    public Missile(int x, int y, boolean good, Tank.Direction dir, TankClient tc) {
-        this(x, y, dir);
         this.good = good;
         this.tc = tc;
     }
 
     public void draw(Graphics g) {
-        if (!live) {
-            tc.missiles.remove(this);
-            return;
-        }
+        if (!live) return;
         Color c = g.getColor();
         g.setColor(good ? Color.RED : Color.BLACK);
         g.fillOval(x, y, WIDTH, HEIGHT);
         g.setColor(c);
-
         move();
     }
 
@@ -66,30 +59,28 @@ public class Missile {
     }
 
     public boolean collidesWithTank(Tank t) {
-        if (this.live && this.getRect().intersects(t.getRect()) && t.isLive() && this.good != t.isGood()) {
+        if (!live || !t.isLive() || good == t.isGood() || !getRect().intersects(t.getRect())) return false;
+        if (t.isGood()) {
             t.setLife(t.getLife() - 20);
-            if (t.getLife() <= 0) {
-                t.setLive(false);
-            }
-            this.live = false;
-            tc.explodes.add(new Explode(x, y, tc));
-            return true;
+            if (t.getLife() <= 0) t.setLive(false);
+        } else {
+            t.setLive(false);
         }
-        return false;
+        this.live = false;
+        tc.explodes.add(new Explode(x, y, tc));
+        return true;
     }
 
     public boolean collidesWithTanks(List<Tank> tanks) {
-        for (Tank t : tanks) {
-            if (collidesWithTank(t)) {
-                return true;
-            }
+        for (int i = 0; i < tanks.size(); i++) {
+            if (collidesWithTank(tanks.get(i))) return true;
         }
         return false;
     }
 
     public boolean collidesWithWall(Wall w) {
-        if (this.live && this.getRect().intersects(w.getRect())) {
-            this.live = false;
+        if (live && getRect().intersects(w.getRect())) {
+            live = false;
             return true;
         }
         return false;
